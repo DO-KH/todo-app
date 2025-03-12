@@ -1,101 +1,79 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import TodoList from "@/components/todolist";
+import Calendar from "@/components/calendar";
+import LoginModal from "@/components/loginModal";
+import { signOut, useSession } from "next-auth/react";
+import { useTodoStore } from "@/store/todoStore"; // ✅ Zustand 스토어 가져오기
+import { useAuthUserContext } from "@/provider/AuthUserProvider";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalType, setModalType] = useState<"signin" | "signup" | null>(null);
+  const { data: session } = useSession();
+  const [selectedDate, setSelectedDate] = useState<string>(""); // ✅ 선택된 날짜 상태 추가
+  const { fetchUserTodos } = useTodoStore();
+  const {user} = useAuthUserContext();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  // ✅ 로그인 여부에 따라 할 일 목록 가져오기
+  useEffect(() => {
+    if (user) {
+      fetchUserTodos();
+    }
+    return;
+  }, [user, fetchUserTodos]);
+
+  return (
+    <>
+      {/* 🔹 로그인 모달 */}
+      <LoginModal modalType={modalType} setModalType={setModalType} />
+
+      <div className="relative m-auto w-[1200px] h-screen text-gray-800 flex flex-col items-center justify-center">
+        
+        {/* 🔹 캘린더 버튼 + 로그인 버튼 */}
+        <div className="absolute top-6 right-6 flex gap-4">
+          {/* 📅 캘린더 열기 버튼 */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition shadow-md"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            📅 캘린더 {isOpen ? "닫기" : "열기"}
+          </button>
+
+          {/* 🔹 로그인 상태 확인 */}
+          {session ? (
+            // ✅ 로그인한 경우 (유저 이메일 표시 & 로그아웃 버튼)
+            <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg shadow-md">
+              <span className="text-gray-800">{session.user?.email}</span>
+              <button
+                onClick={() => signOut()}
+                className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
+              >
+                로그아웃
+              </button>
+            </div>
+          ) : (
+            // ✅ 로그인하지 않은 경우 (로그인 버튼 표시)
+            <button
+              onClick={() => setModalType("signin")}
+              className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition shadow-md"
+            >
+              로그인
+            </button>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* 📅 캘린더 (선택한 날짜 전달) */}
+        <div className="w-full max-w-[900px] flex justify-center mt-4">
+          <Calendar isOpen={isOpen} setSelectedDate={setSelectedDate} />
+        </div>
+
+        {/* 📝 할 일 목록 (선택한 날짜 기반) */}
+        <div className="w-full max-w-[900px] flex justify-center mt-10">
+          <TodoList isOpen={isOpen} selectedDate={selectedDate} />
+        </div>
+      </div>
+    </>
   );
 }

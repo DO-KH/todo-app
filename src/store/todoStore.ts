@@ -1,0 +1,51 @@
+import { create } from "zustand";
+import { Todo } from "@/types/todo";
+import { fetchTodos } from "@/api/todos/fetch-todos";
+import { fetchAddTodo } from "@/api/todos/fetch-add-todo";
+import fetchDeleteTodo from "@/api/todos/fetch-delete-todo";
+
+// ✅ Zustand 상태 인터페이스 정의
+interface TodoState {
+  todos: Todo[];
+  fetchUserTodos: () => Promise<void>;
+  addTodo: (email: string, todo: Todo) => Promise<void>;
+  deleteTodo: (id: string) => Promise<void>;
+}
+
+// ✅ Zustand Store 생성
+export const useTodoStore = create<TodoState>((set, get) => ({
+  todos: [],
+
+  // ✅ 로그인된 유저의 todos 불러오기
+  fetchUserTodos: async () => {
+    try {
+      const fetchedTodos = await fetchTodos();
+      set({ todos: fetchedTodos });
+    } catch (error) {
+      console.error("할 일 목록을 불러오는 중 오류 발생:", error);
+    }
+  },
+
+  // ✅ 할 일 추가
+  addTodo: async (email, todo) => {
+    try {
+      const newTodo = await fetchAddTodo(email, todo);
+      if (newTodo) {
+        set({ todos: [...get().todos, newTodo] });
+      }
+    } catch (error) {
+      console.error("할 일을 추가하는 중 오류 발생:", error);
+    }
+  },
+
+  // ✅ 할 일 삭제
+  deleteTodo: async (id) => {
+    try {
+      await fetchDeleteTodo(id);
+      set({ todos: get().todos.filter((todo) => todo.id !== id) });
+    } catch (error) {
+      console.error("할 일을 삭제하는 중 오류 발생:", error);
+    }
+  },
+
+}));
