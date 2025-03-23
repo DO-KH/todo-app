@@ -4,6 +4,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useTodoStore } from "@/store/todoStore"; // ✅ Zustand에서 todos 가져오기
+import { useLocalTodos } from "@/hooks/useTodosLocal";
+import { useAuthUserContext } from "@/provider/AuthUserProvider";
 
 interface CalendarProps {
   isOpen: boolean;
@@ -12,6 +14,9 @@ interface CalendarProps {
 
 export default function Calendar({ isOpen, setSelectedDate }: CalendarProps) {
   const { todos } = useTodoStore(); // ✅ Zustand에서 todos 가져오기
+  const { localTodos } = useLocalTodos();
+  const { user } = useAuthUserContext();
+  const data = user ? todos : localTodos;
 
   return (
     <div
@@ -31,7 +36,7 @@ export default function Calendar({ isOpen, setSelectedDate }: CalendarProps) {
           aspectRatio={1.8}
           dayMaxEventRows={2}
           moreLinkClick="popover"
-          events={todos.map((todo) => ({
+          events={data.map((todo) => ({
             title: todo.text,
             date: todo.date,
             backgroundColor: "#86efac", // 연한 초록색 (Tailwind `teal-300`)

@@ -9,7 +9,7 @@ interface TodoState {
   todos: Todo[];
   fetchUserTodos: () => Promise<void>;
   addTodo: (email: string, todo: Todo) => Promise<void>;
-  deleteTodo: (id: string) => Promise<void>;
+  deleteTodo: (id: string, email: string) => Promise<void>;
 }
 
 // ✅ Zustand Store 생성
@@ -39,9 +39,9 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   },
 
   // ✅ 할 일 삭제
-  deleteTodo: async (id) => {
+  deleteTodo: async (id, email) => {
     try {
-      await fetchDeleteTodo(id);
+      await fetchDeleteTodo(id, email);
       set({ todos: get().todos.filter((todo) => todo.id !== id) });
     } catch (error) {
       console.error("할 일을 삭제하는 중 오류 발생:", error);

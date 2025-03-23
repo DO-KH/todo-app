@@ -78,12 +78,12 @@ export default function TodoList({
   };
 
   // ✅ 할 일 삭제
-  const handleDeleteTodo = (id: string) => {
+  const handleDeleteTodo = (id: string, email: string) => {
     // ✅ if 문으로 변경하여 ESLint 오류 해결
     if (!user) {
       localDeleteTodo(id);
     } else {
-      deleteTodo(id);
+      deleteTodo(id, email);
     }
   };
 
@@ -180,7 +180,7 @@ export default function TodoList({
                   {todo.text} ({todo.category} - {todo.priority})
                 </span>
                 <button
-                  onClick={() => handleDeleteTodo(todo.id)}
+                  onClick={() => handleDeleteTodo(todo.id, user!.email)}
                   className="text-red-400 hover:text-red-500"
                 >
                   ❌
