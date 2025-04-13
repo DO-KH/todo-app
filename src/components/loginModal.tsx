@@ -3,26 +3,19 @@ import { useEffect, useState } from "react";
 import { fetchSignUp } from "@/api/auth/fetch-SignUp";
 import { fetchSignIn } from "@/api/auth/fetch-SignIn";
 
-// ✅ 인터페이스 정의
 interface LoginModalProps {
   modalType: "signin" | "signup" | null;
   setModalType: (type: "signin" | "signup" | null) => void;
 }
-
-// ✅ `Modal` 설정
-
 
 export default function LoginModal({
   modalType,
   setModalType,
 }: LoginModalProps) {
 
-
   useEffect(() => {
-    // ✅ 클라이언트에서만 `setAppElement` 호출
     if (typeof document !== "undefined") {
-      Modal.setAppElement("body"); // 🔹 `body`로 변경 (더 안정적)
-      
+      Modal.setAppElement("body");
     }
   }, []);
 
@@ -31,7 +24,6 @@ export default function LoginModal({
   ) : null;
 }
 
-// ✅ `AuthModal` 인터페이스 정의
 interface AuthModalProps {
   modalType: "signin" | "signup";
   setModalType: (type: "signin" | "signup" | null) => void;
@@ -42,7 +34,6 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // ✅ 폼 제출 핸들러
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -60,30 +51,28 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
         res = await fetchSignUp(email, password);
       }
   
-      console.log("🔍 응답 데이터:", res); // ✅ 서버 응답 확인
-  
       if (!res || res.error) {
         setErrorMessage(res?.error || "오류가 발생했습니다.");
         return;
       }
       
-
       if (modalType === "signup") {
         alert("회원가입 되었습니다! 로그인 해주세요");
         setModalType("signin");
       } else if(modalType === "signin") {
         setModalType(null)
+        window.location.reload(); // ✅ 로그인 성공 시 새로고침
       }
   
       setEmail("");
       setPassword("");
     } catch (err) {
-      console.error("❌ 서버 요청 실패:", err);
-      setErrorMessage(err instanceof Error ? err.message : "알 수 없는 오류 발생");
+      console.error("서버 요청 실패:", err);
+      setErrorMessage(err instanceof Error ? err.message : "서버 에러 발생");
     }
   };
 
-  if (!modalType) return null; // ✅ 모달이 없으면 렌더링하지 않음
+  if (!modalType) return null; // 모달이 있어야 렌더링
 
   return (
     <Modal

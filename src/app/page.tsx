@@ -21,19 +21,18 @@ export default function Home() {
     if (user) {
       fetchUserTodos();
     }
-    return;
   }, [user, fetchUserTodos]);
 
   return (
     <>
-      {/* 🔹 로그인 모달 */}
+      {/* 로그인 모달 */}
       <LoginModal modalType={modalType} setModalType={setModalType} />
 
       <div className="relative m-auto w-[1200px] h-screen text-gray-800 flex flex-col items-center justify-center">
         
-        {/* 🔹 캘린더 버튼 + 로그인 버튼 */}
+        {/* 캘린더 버튼 + 로그인 버튼 */}
         <div className="absolute top-6 right-6 flex gap-4">
-          {/* 📅 캘린더 열기 버튼 */}
+          {/* 캘린더 열기 버튼 */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition shadow-md"
@@ -43,7 +42,7 @@ export default function Home() {
 
           {/* 🔹 로그인 상태 확인 */}
           {session ? (
-            // ✅ 로그인한 경우 (유저 이메일 표시 & 로그아웃 버튼)
+            // 로그인한 경우 (유저 이메일 표시 & 로그아웃 버튼)
             <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg shadow-md">
               <span className="text-gray-800">{session.user?.email}</span>
               <button
@@ -54,7 +53,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            // ✅ 로그인하지 않은 경우 (로그인 버튼 표시)
+            // 로그인하지 않은 경우 (로그인 버튼 표시)
             <button
               onClick={() => setModalType("signin")}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition shadow-md"
@@ -64,12 +63,12 @@ export default function Home() {
           )}
         </div>
 
-        {/* 📅 캘린더 (선택한 날짜 전달) */}
+        {/* 캘린더 (선택한 날짜 전달) */}
         <div className="w-full max-w-[900px] flex justify-center mt-4">
           <Calendar isOpen={isOpen} setSelectedDate={setSelectedDate} />
         </div>
 
-        {/* 📝 할 일 목록 (선택한 날짜 기반) */}
+        {/* 할 일 목록 (선택한 날짜 기반) */}
         <div className="w-full max-w-[900px] flex justify-center mt-10">
           <TodoList isOpen={isOpen} selectedDate={selectedDate} />
         </div>

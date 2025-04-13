@@ -4,7 +4,6 @@ import { fetchTodos } from "@/api/todos/fetch-todos";
 import { fetchAddTodo } from "@/api/todos/fetch-add-todo";
 import fetchDeleteTodo from "@/api/todos/fetch-delete-todo";
 
-// ✅ Zustand 상태 인터페이스 정의
 interface TodoState {
   todos: Todo[];
   fetchUserTodos: () => Promise<void>;
@@ -12,11 +11,10 @@ interface TodoState {
   deleteTodo: (id: string, email: string) => Promise<void>;
 }
 
-// ✅ Zustand Store 생성
 export const useTodoStore = create<TodoState>((set, get) => ({
   todos: [],
 
-  // ✅ 로그인된 유저의 todos 불러오기
+  // todos 불러오기
   fetchUserTodos: async () => {
     try {
       const fetchedTodos = await fetchTodos();
@@ -26,7 +24,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     }
   },
 
-  // ✅ 할 일 추가
+  // 할 일 추가
   addTodo: async (email, todo) => {
     try {
       const newTodo = await fetchAddTodo(email, todo);
@@ -38,7 +36,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     }
   },
 
-  // ✅ 할 일 삭제
+  // 할 일 삭제
   deleteTodo: async (id, email) => {
     try {
       await fetchDeleteTodo(id, email);

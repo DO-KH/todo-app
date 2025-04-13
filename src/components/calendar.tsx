@@ -4,8 +4,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useTodoStore } from "@/store/todoStore"; // ✅ Zustand에서 todos 가져오기
-import { useLocalTodos } from "@/hooks/useTodosLocal";
 import { useAuthUserContext } from "@/provider/AuthUserProvider";
+import { useLocalTodoStore } from "@/store/useLocalTodoStore";
 
 interface CalendarProps {
   isOpen: boolean;
@@ -14,7 +14,7 @@ interface CalendarProps {
 
 export default function Calendar({ isOpen, setSelectedDate }: CalendarProps) {
   const { todos } = useTodoStore(); // ✅ Zustand에서 todos 가져오기
-  const { localTodos } = useLocalTodos();
+  const { localTodos } = useLocalTodoStore();
   const { user } = useAuthUserContext();
   const data = user ? todos : localTodos;
 

@@ -1,10 +1,12 @@
 "use client";
 
-import { useLocalTodos } from "@/hooks/useTodosLocal";
+
 import { useTodoStore } from "@/store/todoStore";
 import { useState } from "react";
 import { Todo } from "@/types/todo";
 import { useAuthUserContext } from "@/provider/AuthUserProvider";
+import { useLocalTodoStore } from "@/store/useLocalTodoStore";
+
 
 const categories = ["Work", "Personal", "Health"];
 const priorities = ["High", "Medium", "Low"];
@@ -14,7 +16,7 @@ const priorityLevels: { [key: string]: number } = {
   Low: 3,
 };
 
-// ✅ 오늘 날짜 구하는 함수
+// 오늘 날짜 구하는 함수
 const getToday = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -37,15 +39,19 @@ export default function TodoList({
   const [priority, setPriority] = useState(priorities[1]);
   const [filterCategory, setFilterCategory] = useState("All");
 
-  // ✅ Zustand(Store) & 로컬 스토리지 Hook
+  // 인증 유저
   const { todos, addTodo, deleteTodo, } = useTodoStore();
-  const { localTodos, localAddTodo, localDeleteTodo } = useLocalTodos();
+
+  // 게스트
+  const { localTodos, addLocalTodo, deleteLocalTodo } = useLocalTodoStore();
+
+  // 현재 유저 상태
   const { user } = useAuthUserContext();
 
-  // ✅ 현재 로그인 상태에 따라 할 일 목록 가져오기
+  // 유저 상태에 따른 데이터 불러오기
   const allTodos = !user ? localTodos : todos;
 
-  // ✅ 선택된 날짜 & 카테고리 필터링
+  // 선택된 날짜 & 카테고리 필터링
   const filteredTodos = allTodos
     .filter(
       (todo) =>
@@ -54,7 +60,7 @@ export default function TodoList({
     )
     .sort((a, b) => priorityLevels[a.priority] - priorityLevels[b.priority]);
 
-  // ✅ 할 일 추가
+  // 할 일 추가
   const handleAddTodo = () => {
     if (input.trim() === "") return;
 
@@ -67,7 +73,7 @@ export default function TodoList({
     };
 
     if (!user) {
-      localAddTodo(newTodo);
+      addLocalTodo(newTodo);
     } else {
       addTodo(user.email, newTodo);
     }
@@ -77,11 +83,10 @@ export default function TodoList({
     setPriority(priorities[1]);
   };
 
-  // ✅ 할 일 삭제
+  // 할 일 삭제
   const handleDeleteTodo = (id: string, email: string) => {
-    // ✅ if 문으로 변경하여 ESLint 오류 해결
     if (!user) {
-      localDeleteTodo(id);
+      deleteLocalTodo(id);
     } else {
       deleteTodo(id, email);
     }
@@ -90,14 +95,14 @@ export default function TodoList({
   return (
     <div
       className={`absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] transition-all duration-600 bg-white p-6 rounded-xl shadow-md border border-teal-200 w-[450px] ${
-        isOpen ? "translate-x-[175px]" : ""
+        isOpen ? "translate-x-[140px]" : ""
       }`}
     >
       <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
         📝 {selectedDate || today}의 할 일
       </h2>
 
-      {/* ✅ 입력 필드 */}
+      {/* 입력 필드 */}
       <div className="flex flex-col gap-2">
         <input
           type="text"
@@ -113,7 +118,7 @@ export default function TodoList({
           className="p-2 border border-teal-300 rounded-md bg-teal-50 text-gray-800"
         />
 
-        {/* ✅ 카테고리 선택 */}
+        {/* 카테고리 선택 */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -126,7 +131,7 @@ export default function TodoList({
           ))}
         </select>
 
-        {/* ✅ 우선순위 선택 */}
+        {/* 우선순위 선택 */}
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
@@ -147,7 +152,7 @@ export default function TodoList({
         </button>
       </div>
 
-      {/* ✅ 카테고리 필터 */}
+      {/* 카테고리 필터 */}
       <div className="mt-4">
         <label className="block font-bold text-gray-800">
           🏷️ 카테고리 필터:
@@ -166,8 +171,8 @@ export default function TodoList({
         </select>
       </div>
 
-      {/* ✅ 할 일 목록 */}
-      <div className="mt-4 max-h-[300px] overflow-y-auto border border-teal-200 rounded-md p-2 bg-teal-50">
+      {/* 할 일 목록 */}
+      <div className="mt-4 max-h-[210px] overflow-y-auto border border-teal-200 rounded-md p-2 bg-teal-50">
         <ul className="space-y-2">
           {filteredTodos.length > 0 ? (
             filteredTodos.map((todo) => (
@@ -180,7 +185,7 @@ export default function TodoList({
                   {todo.text} ({todo.category} - {todo.priority})
                 </span>
                 <button
-                  onClick={() => handleDeleteTodo(todo.id, user!.email)}
+                  onClick={() => handleDeleteTodo(todo.id, user ? user.email : "")}
                   className="text-red-400 hover:text-red-500"
                 >
                   ❌
