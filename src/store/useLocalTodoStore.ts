@@ -1,4 +1,4 @@
-// /store/useLocalTodoStore.ts
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Todo } from "@/types/todo";
@@ -15,25 +15,25 @@ export const useLocalTodoStore = create<LocalTodoStore>()(
     (set, get) => ({
       localTodos: [],
 
-      // ✅ 할 일 추가
+      // 할 일 추가
       addLocalTodo: (newTodo) => {
         const updatedTodos = [...get().localTodos, newTodo];
         set({ localTodos: updatedTodos });
       },
 
-      // ✅ 할 일 삭제
+      // 할 일 삭제
       deleteLocalTodo: (id) => {
         const updatedTodos = get().localTodos.filter((todo) => todo.id !== id);
         set({ localTodos: updatedTodos });
       },
 
-      // ✅ 할 일 직접 설정 (필요할 경우)
+      // 할 일 직접 설정 (필요할 경우)
       setLocalTodos: (todos) => set({ localTodos: todos }),
     }),
     {
       name: "todos", // localStorage 키
       // onRehydrateStorage: () => (state) => {
-      //   console.log("✅ 상태 복원됨", state);
+      //   console.log("상태 복원", state);
       // },
     }
   )

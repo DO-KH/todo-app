@@ -26,13 +26,28 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 
   // 할 일 추가
   addTodo: async (email, todo) => {
+    // 1. 클라이언트 측에서 먼저 UI에 반영
+    const tempId = crypto.randomUUID(); // 임시 ID
+    const optimisticTodo = { ...todo, id: tempId };
+    set({ todos: [...get().todos, optimisticTodo] });
+  
     try {
+      // 2. 실제 DB에 저장
       const newTodo = await fetchAddTodo(email, todo);
-      if (newTodo) {
-        set({ todos: [...get().todos, newTodo] });
-      }
+  
+      // 3. 저장 성공했으면 실제 ID로 바꿔치기
+      set({
+        todos: get().todos.map((t) =>
+          t.id === tempId ? newTodo : t
+        ),
+      });
     } catch (error) {
       console.error("할 일을 추가하는 중 오류 발생:", error);
+  
+      // 4. 실패 시 optimistic todo 롤백
+      set({
+        todos: get().todos.filter((t) => t.id !== tempId),
+      });
     }
   },
 
