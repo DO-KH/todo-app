@@ -2,7 +2,7 @@ import { AuthUserProvider } from "@/provider/AuthUserProvider";
 import "./globals.css";
 import SessionProviderWrapper from "@/provider/SessionProviderWrapper";
 
-// ✅ SEO 메타데이터 설정
+// SEO
 export const metadata = {
   title: "TodoApp - 날짜별 할 일 관리",
   description: "Next.js 기반 싱글페이지 투두앱으로, 날짜별 할 일을 쉽게 관리할 수 있습니다.",

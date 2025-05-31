@@ -12,7 +12,6 @@ export default function LoginModal({
   modalType,
   setModalType,
 }: LoginModalProps) {
-
   useEffect(() => {
     if (typeof document !== "undefined") {
       Modal.setAppElement("body");
@@ -37,12 +36,12 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-  
+
     if (!email.trim() || !password.trim()) {
       setErrorMessage("이메일과 비밀번호를 입력해주세요.");
       return;
     }
-  
+
     try {
       let res;
       if (modalType === "signin") {
@@ -50,20 +49,20 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
       } else if (modalType === "signup") {
         res = await fetchSignUp(email, password);
       }
-  
+
       if (!res || res.error) {
         setErrorMessage(res?.error || "오류가 발생했습니다.");
         return;
       }
-      
+
       if (modalType === "signup") {
         alert("회원가입 되었습니다! 로그인 해주세요");
         setModalType("signin");
-      } else if(modalType === "signin") {
-        setModalType(null)
-        window.location.reload(); // ✅ 로그인 성공 시 새로고침
+      } else if (modalType === "signin") {
+        setModalType(null);
+        window.location.reload(); // 로그인 성공 시 새로고침
       }
-  
+
       setEmail("");
       setPassword("");
     } catch (err) {
@@ -81,7 +80,14 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
       className="flex items-center justify-center fixed inset-0 z-50 outline-none"
       overlayClassName="fixed inset-0 bg-[rgba(255,255,255,0.2)] backdrop-blur-md"
     >
-      <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg border border-teal-300 relative">
+      <div
+        className={`w-full max-w-md p-6 rounded-lg shadow-lg border relative
+    ${
+      modalType === "signin"
+        ? "bg-teal-50 border-teal-300"
+        : "bg-purple-50 border-purple-300"
+    }`}
+      >
         {/* 닫기 버튼 */}
         <button
           className="absolute top-3 right-4 text-gray-500 hover:text-red-500"
@@ -103,20 +109,20 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 focus:ring-2 focus:ring-teal-400"
+            className={`w-full p-3 border rounded-lg text-gray-800 focus:ring-2 ${modalType === "signin" ? "bg-teal-50 border-teal-300 focus:ring-teal-400" : "bg-purple-50 border-purple-300 focus:ring-purple-400"}`}
           />
           <input
             type="password"
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 focus:ring-2 focus:ring-teal-400"
+            className={`w-full p-3 border rounded-lg text-gray-800 focus:ring-2 focus:ring-teal-400 ${modalType === "signin" ? "bg-teal-50 border-teal-300 focus:ring-teal-400" : "bg-purple-50 border-purple-300 focus:ring-purple-400"}`}
           />
 
           {/* 버튼 */}
           <button
             type="submit"
-            className="w-full py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition"
+            className={`w-full py-3 text-white rounded-lg ${modalType === "signin" ? "bg-teal-500 hover:bg-teal-600" : "bg-purple-500 hover:bg--600" }`}
           >
             {modalType === "signin" ? "로그인" : "회원가입"}
           </button>
@@ -124,7 +130,7 @@ function AuthModal({ modalType, setModalType }: AuthModalProps) {
 
         {/* 회원가입/로그인 전환 버튼 */}
         <button
-          className="w-full mt-4 py-3 text-teal-500 hover:text-teal-600 transition text-center"
+          className={`w-full mt-4 py-3 transition text-center ${modalType === "signin" ? " text-teal-500 hover:text-teal-600" : " text-purple-500 hover:text-purple-600" }`}
           type="button"
           onClick={() =>
             setModalType(modalType === "signin" ? "signup" : "signin")

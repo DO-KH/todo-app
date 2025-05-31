@@ -94,7 +94,7 @@ export default function TodoList({
 
   return (
     <div
-      className={`absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] transition-all duration-600 bg-white p-6 rounded-xl shadow-md border border-teal-200 w-[450px] ${
+      className={`absolute top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%] transition-all duration-[600ms] bg-white p-6 rounded-xl shadow-md border border-teal-200 w-[450px] ${
         isOpen ? "translate-x-[140px]" : ""
       }`}
     >
