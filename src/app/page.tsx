@@ -11,12 +11,12 @@ import { useAuthUserContext } from "@/provider/AuthUserProvider";
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<"signin" | "signup" | null>(null);
-  const { data: session } = useSession();
-  const [selectedDate, setSelectedDate] = useState<string>(""); // ✅ 선택된 날짜 상태 추가
+  const { data: session, status } = useSession();
+  const [selectedDate, setSelectedDate] = useState<string>(""); // 선택된 날짜 상태 추가
   const { fetchUserTodos } = useTodoStore();
-  const {user} = useAuthUserContext();
+  const { user } = useAuthUserContext();
 
-  // ✅ 로그인 여부에 따라 할 일 목록 가져오기
+  // 로그인 여부에 따라 할 일 목록 가져오기
   useEffect(() => {
     if (user) {
       fetchUserTodos();
@@ -29,7 +29,6 @@ export default function Home() {
       <LoginModal modalType={modalType} setModalType={setModalType} />
 
       <div className="relative m-auto w-[1200px] h-screen text-gray-800 flex flex-col items-center justify-center">
-        
         {/* 캘린더 버튼 + 로그인 버튼 */}
         <div className="absolute top-6 right-6 flex gap-4">
           {/* 캘린더 열기 버튼 */}
@@ -41,8 +40,11 @@ export default function Home() {
           </button>
 
           {/* 🔹 로그인 상태 확인 */}
-          {session ? (
-            // 로그인한 경우 (유저 이메일 표시 & 로그아웃 버튼)
+          {status === "loading" ? (
+            // 아직 세션 판단 중 → 일단 아무것도 보여주지 않음 or 로딩 UI
+            <div className="w-[180px] h-[42px] flex items-center justify-center bg-gray-100 text-gray-500 rounded-lg animate-pulse shadow-sm">확인 중...</div>
+          ) : session ? (
+            // 로그인 완료 → 사용자 UI
             <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg shadow-md">
               <span className="text-gray-800">{session.user?.email}</span>
               <button
@@ -53,7 +55,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            // 로그인하지 않은 경우 (로그인 버튼 표시)
+            // 로그인 안됨
             <button
               onClick={() => setModalType("signin")}
               className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition shadow-md"
