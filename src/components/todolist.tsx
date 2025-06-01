@@ -1,12 +1,11 @@
 "use client";
 
-
 import { useTodoStore } from "@/store/todoStore";
 import { useState } from "react";
 import { Todo } from "@/types/todo";
 import { useAuthUserContext } from "@/provider/AuthUserProvider";
 import { useLocalTodoStore } from "@/store/useLocalTodoStore";
-
+import TodoItem from "./TodoItem";
 
 const categories = ["Work", "Personal", "Health"];
 const priorities = ["High", "Medium", "Low"];
@@ -40,7 +39,7 @@ export default function TodoList({
   const [filterCategory, setFilterCategory] = useState("All");
 
   // 인증 유저
-  const { todos, addTodo, deleteTodo, } = useTodoStore();
+  const { todos, addTodo, deleteTodo } = useTodoStore();
 
   // 게스트
   const { localTodos, addLocalTodo, deleteLocalTodo } = useLocalTodoStore();
@@ -65,7 +64,7 @@ export default function TodoList({
     if (input.trim() === "") return;
 
     const newTodo: Todo = {
-      id: crypto.randomUUID(), 
+      id: crypto.randomUUID(),
       text: input,
       date,
       category,
@@ -172,31 +171,11 @@ export default function TodoList({
       </div>
 
       {/* 할 일 목록 */}
-      <div className="mt-4 max-h-[210px] overflow-y-auto border border-teal-200 rounded-md p-2 bg-teal-50">
-        <ul className="space-y-2">
-          {filteredTodos.length > 0 ? (
-            filteredTodos.map((todo) => (
-              <li
-                key={todo.id}
-                className="flex items-center bg-white p-2 rounded-md shadow-md border border-teal-200"
-              >
-                <input type="checkbox" className="mr-2" />
-                <span className="flex-1 text-gray-800">
-                  {todo.text} ({todo.category} - {todo.priority})
-                </span>
-                <button
-                  onClick={() => handleDeleteTodo(todo.id, user ? user.email : "")}
-                  className="text-red-400 hover:text-red-500"
-                >
-                  ❌
-                </button>
-              </li>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">할 일이 없습니다.</p>
-          )}
-        </ul>
-      </div>
+      <TodoItem
+        todos={filteredTodos}
+        onDelete={handleDeleteTodo}
+        userEmail={user ? user.email : ""}
+      />
     </div>
   );
 }

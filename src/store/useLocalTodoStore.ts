@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Todo } from "@/types/todo";
@@ -8,6 +7,7 @@ interface LocalTodoStore {
   addLocalTodo: (newTodo: Todo) => void;
   deleteLocalTodo: (id: string) => void;
   setLocalTodos: (todos: Todo[]) => void;
+  toggleLocalComplete: (id: string) => void;
 }
 
 export const useLocalTodoStore = create<LocalTodoStore>()(
@@ -29,6 +29,13 @@ export const useLocalTodoStore = create<LocalTodoStore>()(
 
       // 할 일 직접 설정 (필요할 경우)
       setLocalTodos: (todos) => set({ localTodos: todos }),
+
+      toggleLocalComplete: (id) =>
+        set((state) => ({
+          localTodos: state.localTodos.map((todo) =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          ),
+        })),
     }),
     {
       name: "todos", // localStorage 키

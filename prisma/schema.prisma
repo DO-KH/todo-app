@@ -31,6 +31,7 @@ model Todos {
   category String // 카테고리 (예: Work, Personal 등)
   priority String // 우선순위 (예: High, Medium, Low)
   createdAt DateTime @default(now()) // 생성 날짜
+  completed Boolean @default(false)
   email String // 유저 이메일 (외래키 역할)
 
   // User 테이블과 관계 설정 (`email`을 외래키로 사용)

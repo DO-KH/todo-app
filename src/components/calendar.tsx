@@ -39,11 +39,12 @@ export default function Calendar({ isOpen, setSelectedDate }: CalendarProps) {
           events={data.map((todo) => ({
             title: todo.text,
             date: todo.date,
-            backgroundColor: "#86efac", // 연한 초록색 (Tailwind `teal-300`)
-            borderColor: "#0d9488", // 테두리 색 (Tailwind `teal-600`)
-            textColor: "#065f46", // 글자 색상 (Tailwind `teal-900`)
+            backgroundColor: todo.completed ? "#d4d4d8" : "#86efac", // 연한 초록색 (Tailwind `teal-300`)
+            borderColor: todo.completed ? "#a1a1aa" :  "#0d9488", // 테두리 색 (Tailwind `teal-600`)
+            textColor: todo.completed ? "#71717a" :  "#065f46", // 글자 색상 (Tailwind `teal-900`)
+            classNames: todo.completed ? ["line-through", "opacity-60"] : [],
           }))}
-          eventClassNames={() => ["text-xs", "font-semibold"]} // Tailwind 스타일 적용
+          eventClassNames={(arg) => ["text-xs", "font-semibold", ...arg.event.classNames]} // Tailwind 스타일 적용
           dayCellClassNames={() => ["bg-teal-50", "hover:bg-teal-100"]} // 날짜 칸 스타일 적용
           dateClick={(info) => setSelectedDate(info.dateStr)} // 날짜 클릭 시 선택
         />
